@@ -1,4 +1,4 @@
-package com.mmihaylov.rest.entries;
+package com.mmihaylov.rest.resources;
 
 import com.mmihaylov.rest.RestServicesException;
 import com.mmihaylov.rest.services.NewsService;
@@ -17,6 +17,7 @@ import javax.ws.rs.core.Response;
 public class NewsResource {
 
     private static final Logger LOGGER = LogManager.getLogger(NewsResource.class);
+    private static final String PLAIN_TEXT_UTF_8 = MediaType.TEXT_PLAIN + "; charset=UTF-8";
 
     private NewsService newsService;
 
@@ -28,21 +29,17 @@ public class NewsResource {
 
     @GET
     @Path("/{id}")
-    @Produces(MediaType.TEXT_PLAIN)
+    @Produces(PLAIN_TEXT_UTF_8)
     public Response get(@PathParam("id") Integer id) throws RestServicesException {
         LOGGER.info("Get news with id: %d", id);
         try {
             String newsText = newsService.getNews(id);
             return Response.status(Response.Status.OK)
-                    .type(MediaType.TEXT_PLAIN)
                     .entity(newsText)
                     .build();
         } catch (RestServicesException rse) {
             LOGGER.error("Failure in server side. ", rse);
             throw rse;
-            //return "Failure in server side. " + rse.getMessage();
-            //Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Failure in server side.").build();
         }
-        //return Response.status(Response.Status.OK).entity(newsText).build();
     }
 }

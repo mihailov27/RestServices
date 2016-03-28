@@ -1,4 +1,4 @@
-package com.mmihaylov.rest.entries;
+package com.mmihaylov.rest.resources;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

@@ -6,6 +6,7 @@ import com.mmihaylov.rest.services.NewsService;
 import com.mmihaylov.rest.utils.URLReader;
 
 import javax.inject.Inject;
+import java.nio.charset.Charset;
 
 public class NewsServiceImpl implements NewsService {
 

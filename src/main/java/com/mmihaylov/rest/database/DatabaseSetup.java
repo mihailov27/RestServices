@@ -4,19 +4,19 @@ import com.google.inject.Inject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hsqldb.server.Server;
-
-import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.File;
 
+@Deprecated
 public class DatabaseSetup {
 
     private static final Logger LOG = LogManager.getLogger(DatabaseSetup.class);
 
     private Server server;
 
-    @Inject
+    //@Inject
     public void setUp() {
+        LOG.info("");
         // set up server
         server = new Server();
         server.setAddress("127.0.0.1");
@@ -24,6 +24,7 @@ public class DatabaseSetup {
         server.setDatabaseName(0, "NEWS_DB");
         server.setDatabasePath(0, getDbFolder().getAbsolutePath() + "/NEWS_DB");
         server.setTrace(true);
+        server.stop();
         server.start();
     }
 

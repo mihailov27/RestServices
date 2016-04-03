@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+@Deprecated
 public class DatabaseSetupTest extends BaseTest {
 
     static final String CREATE_TABLE = "create table users (name varchar(45),email varchar(45),phone varchar(45))";
@@ -18,7 +19,7 @@ public class DatabaseSetupTest extends BaseTest {
         super.setUp();
     }
 
-    @Test
+    //@Test
     public void testConnection() throws SQLException {
         Connection connection = DriverManager.getConnection("jdbc:hsqldb:hsql://localhost:1234/NEWS_DB", "SA", "");
         Assert.assertTrue(!connection.isClosed());

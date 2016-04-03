@@ -5,5 +5,5 @@ import com.mmihaylov.rest.RestServicesException;
 public interface NewsService {
 
     /** Returns the news specified by id in plain text format. */
-    String getNews(int id) throws RestServicesException;
+    String getNews(long id) throws RestServicesException;
 }

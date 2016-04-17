@@ -1,6 +1,6 @@
 package com.mmihaylov.rest;
 
-public class RestServicesException extends Exception {
+public class RestServicesException extends RuntimeException {
 
     public RestServicesException(String message) {
         super(message);

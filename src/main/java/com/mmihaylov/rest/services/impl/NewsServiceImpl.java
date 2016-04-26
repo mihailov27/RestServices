@@ -6,36 +6,41 @@ import com.google.common.cache.LoadingCache;
 import com.mmihaylov.rest.RestServicesException;
 import com.mmihaylov.rest.database.dao.NewsDao;
 import com.mmihaylov.rest.database.entities.News;
-import com.mmihaylov.rest.html.HTMLParser;
+import com.mmihaylov.rest.html.NoviniParser;
+import com.mmihaylov.rest.resources.model.NewsEntity;
 import com.mmihaylov.rest.services.NewsService;
+import com.mmihaylov.rest.utils.NewsConverter;
 import com.mmihaylov.rest.utils.URLReader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.inject.Inject;
-import java.util.Date;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 public class NewsServiceImpl implements NewsService {
 
-    private static final Logger LOGGER = LogManager.getLogger(NewsServiceImpl.class);
+    private static final Logger LOG = LogManager.getLogger(NewsServiceImpl.class);
 
     private static final String NOVINI_TEMPLATE = "http://www.novini.bg/news/%d.html";
 
     private URLReader urlReader;
 
-    private HTMLParser htmlParser;
+    private NoviniParser noviniParser;
 
     private NewsDao newsDao;
 
-    private LoadingCache<Long, News> cache;
+    private NewsConverter newsConverter;
+
+    private LoadingCache<Long, NewsEntity> cache;
 
     @Inject
-    public NewsServiceImpl(URLReader urlReader, HTMLParser htmlParser, NewsDao newsDao) {
+    public NewsServiceImpl(URLReader urlReader, NoviniParser noviniParser, NewsDao newsDao,
+                           NewsConverter newsConverter) {
+        LOG.debug("Init News service.");
         this.urlReader = urlReader;
-        this.htmlParser = htmlParser;
+        this.noviniParser = noviniParser;
         this.newsDao = newsDao;
+        this.newsConverter = newsConverter;
     }
 
     @Inject
@@ -44,49 +49,46 @@ public class NewsServiceImpl implements NewsService {
                 .initialCapacity(10)
                 .maximumSize(40)
                 .expireAfterWrite(10, TimeUnit.MINUTES)
-                .build(new CacheLoader<Long, News>() {
+                .build(new CacheLoader<Long, NewsEntity>() {
                     @Override
-                    public News load(Long aLong) throws Exception {
+                    public NewsEntity load(Long aLong) throws Exception {
                         return NewsServiceImpl.this.loadNews(aLong);
                     }
                 });
     }
 
-    private String loadFromHtml(long id) throws RestServicesException {
+    private NewsEntity loadFromHtml(long id) throws RestServicesException {
         String fullAddress = String.format(NOVINI_TEMPLATE, id);
         String htmlPage = urlReader.readURLAsString(fullAddress);
-        String news = htmlParser.parseNews(htmlPage);
-        return news;
+        NewsEntity newsEntity = noviniParser.parse(htmlPage);
+        return newsEntity;
     }
 
-    private News saveInDb(long externalId, String content) {
-        LOGGER.debug("Saving in database external id '%d', content '%s'", externalId,
-                content.length() > 50 ? content.substring(0,50) : content);
-        News news = new News();
-        news.setNewsExternalId(externalId);
-        news.setCreated(new Date());
-        news.setNewsText(content.getBytes());
+    private News saveInDb(NewsEntity newsEntity) {
+        LOG.debug("Saving in database news entity:", newsEntity);
+        News news = newsConverter.revert(newsEntity);
         newsDao.persist(news);
         return news;
     }
 
-    private News loadNews(long id) throws RestServicesException {
+    protected NewsEntity loadNews(long id) throws RestServicesException {
         News news = newsDao.findByExternalId(id);
         if(news == null) {
-            String content = loadFromHtml(id);
-            news = saveInDb(id, content);
+            NewsEntity newsEntity = loadFromHtml(id);
+            newsEntity.setId(id);
+            saveInDb(newsEntity);
+            return newsEntity;
+        } else {
+            return null;
         }
-        return news;
     }
 
-    public String getNews(long id) throws RestServicesException {
-        String contentNews = null;
+    public NewsEntity getNews(long id) throws RestServicesException {
         try {
-            News news = cache.get(id);
-            contentNews =  new String(news.getNewsText());
-        } catch (ExecutionException eE) {
-
+            NewsEntity news = cache.get(id);
+            return news;
+        } catch (Exception eE) {
+            throw new RestServicesException("Fail to load news with id: " + id, eE);
         }
-        return contentNews;
     }
 }

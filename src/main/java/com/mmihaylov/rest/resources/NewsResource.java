@@ -1,6 +1,7 @@
 package com.mmihaylov.rest.resources;
 
 import com.mmihaylov.rest.RestServicesException;
+import com.mmihaylov.rest.resources.model.NewsEntity;
 import com.mmihaylov.rest.services.NewsService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,10 +15,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 @Path("/news")
-public class NewsResource {
+public class NewsResource extends BaseResource {
 
     private static final Logger LOGGER = LogManager.getLogger(NewsResource.class);
-    private static final String PLAIN_TEXT_UTF_8 = MediaType.TEXT_PLAIN + "; charset=UTF-8";
+    private static final String CHARSET_UTF8 = "; charset=UTF-8";
 
     private NewsService newsService;
 
@@ -29,17 +30,16 @@ public class NewsResource {
 
     @GET
     @Path("/{id}")
-    @Produces(PLAIN_TEXT_UTF_8)
-    public Response get(@PathParam("id") Integer id) throws RestServicesException {
+    @Produces(MediaType.APPLICATION_JSON + CHARSET_UTF8)
+    public Response getNewsContent(@PathParam("id") Integer id) {
         LOGGER.info("Get news with id: %d", id);
         try {
-            String newsText = newsService.getNews(id);
+            NewsEntity newsEntity = newsService.getNews(id);
             return Response.status(Response.Status.OK)
-                    .entity(newsText)
+                    .entity(newsEntity)
                     .build();
         } catch (RestServicesException rse) {
-            LOGGER.error("Failure in server side. ", rse);
-            throw rse;
+            return commonError();
         }
     }
 }

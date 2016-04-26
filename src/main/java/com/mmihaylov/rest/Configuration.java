@@ -9,7 +9,7 @@ public class Configuration extends JerseyServletModule {
     @Override
     protected void configureServlets() {
         serve("/*").with(GuiceContainer.class);
-        filter("/*").through(PersistFilter.class);
+        //filter("/*").through(PersistFilter.class);
         install(new DataModule());
         install(new ServicesModule());
         install(new ResourcesModule());

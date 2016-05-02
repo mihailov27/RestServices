@@ -14,6 +14,7 @@
         <log4j.version>2.5</log4j.version>
         <junit.version>4.12</junit.version>
         <hibernate.version>5.1.0.Final</hibernate.version>
+        <es.version>2.3.2</es.version>
     </properties>
 
     <dependencies>
@@ -73,6 +74,12 @@
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
             <version>${log4j.version}</version>
+        </dependency>
+        <!-- elasticsearch -->
+        <dependency>
+            <groupId>org.elasticsearch</groupId>
+            <artifactId>elasticsearch</artifactId>
+            <version>${es.version}</version>
         </dependency>
         <!-- junit -->
         <dependency>

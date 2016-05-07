@@ -3,6 +3,7 @@ package com.mmihaylov.rest.services.impl;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.inject.persist.Transactional;
 import com.mmihaylov.rest.RestServicesException;
 import com.mmihaylov.rest.database.dao.NewsDao;
 import com.mmihaylov.rest.database.entities.News;
@@ -15,6 +16,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.inject.Inject;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 public class NewsServiceImpl implements NewsService {
@@ -64,28 +66,35 @@ public class NewsServiceImpl implements NewsService {
         return newsEntity;
     }
 
-    private News saveInDb(NewsEntity newsEntity) {
+    @Transactional
+    public News saveInDb(NewsEntity newsEntity) {
         LOG.debug("Saving in database news entity:", newsEntity);
         News news = newsConverter.revert(newsEntity);
-        newsDao.persist(news);
+        news.setCreatedDate(new Date());
+        news.setIsIndexed(false);
+        newsDao.save(news);
         return news;
     }
 
     protected NewsEntity loadNews(long id) throws RestServicesException {
+        NewsEntity newsEntity;
         News news = newsDao.findByExternalId(id);
         if(news == null) {
-            NewsEntity newsEntity = loadFromHtml(id);
+            newsEntity = loadFromHtml(id);
             newsEntity.setId(id);
             saveInDb(newsEntity);
             return newsEntity;
         } else {
-            return null;
+            //news.setNewsText("from db ".getBytes());
+            newsEntity = newsConverter.convert(news);
         }
+        return newsEntity;
     }
 
     public NewsEntity getNews(long id) throws RestServicesException {
         try {
-            NewsEntity news = cache.get(id);
+            //NewsEntity news = cache.get(id);
+            NewsEntity news = loadNews(id);
             return news;
         } catch (Exception eE) {
             throw new RestServicesException("Fail to load news with id: " + id, eE);

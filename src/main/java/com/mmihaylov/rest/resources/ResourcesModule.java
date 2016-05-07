@@ -1,4 +1,4 @@
-package com.mmihaylov.rest;
+package com.mmihaylov.rest.resources;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;

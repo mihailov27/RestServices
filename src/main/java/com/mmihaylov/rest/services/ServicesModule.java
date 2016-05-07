@@ -1,20 +1,19 @@
-package com.mmihaylov.rest;
+package com.mmihaylov.rest.services;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
-import com.mmihaylov.rest.services.NewsService;
-import com.mmihaylov.rest.services.UserService;
 import com.mmihaylov.rest.services.impl.NewsServiceImpl;
+import com.mmihaylov.rest.services.impl.ScheduledIndexServiceImpl;
+import com.mmihaylov.rest.services.impl.SearchServiceImpl;
 import com.mmihaylov.rest.services.impl.UserServiceImpl;
 
-/**
- * bind services
- */
 public class ServicesModule extends AbstractModule {
 
     @Override
     protected void configure() {
         bind(NewsService.class).to(NewsServiceImpl.class).in(Singleton.class);
         bind(UserService.class).to(UserServiceImpl.class).in(Singleton.class);
+        bind(SearchService.class).to(SearchServiceImpl.class).in(Singleton.class);
+        bind(ScheduledIndexService.class).to(ScheduledIndexServiceImpl.class).in(Singleton.class);
     }
 }

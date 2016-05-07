@@ -13,7 +13,6 @@ public class UserServiceImpl implements UserService {
 
     private static final Logger LOG = LogManager.getLogger(UserServiceImpl.class);
 
-    @Override
     public UserEntity getUser(int id) {
         LOG.debug("Find a user with id: %d", id);
         if(id <= 0) {

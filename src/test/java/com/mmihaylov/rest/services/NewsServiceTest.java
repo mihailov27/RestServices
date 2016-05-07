@@ -20,7 +20,11 @@ public class NewsServiceTest extends BaseTest {
 
     @Test
     public void testGetNews() throws RestServicesException{
-        NewsEntity news = newsService.getNews(344189);
+        NewsEntity news = newsService.getNews(344187);
         Assert.assertNotNull(news);
+
+        // test again if it is in the database
+        NewsEntity news2 = newsService.getNews(344187);
+        Assert.assertNotNull(news2);
     }
 }

@@ -13,7 +13,7 @@ public class SearchModule extends AbstractModule {
     @Override
     protected void configure() {
         bind(Client.class).toProvider(ClientProvider.class).in(Singleton.class);
-        bind(IndexConfiguration.class).to(IndexConfigurationImpl.class).in(Singleton.class);
+        bind(IndexConfiguration.class).to(IndexConfigurationImpl.class).asEagerSingleton();
         bind(Indexer.class).annotatedWith(Names.named("newsIndexer")).to(NewsIndexer.class).in(Singleton.class);
     }
 }

@@ -3,6 +3,7 @@ package com.mmihaylov.rest.resources;
 import com.mmihaylov.rest.RestServicesException;
 import com.mmihaylov.rest.resources.model.NewsEntity;
 import com.mmihaylov.rest.services.NewsService;
+import com.mmihaylov.rest.services.ScheduledIndexService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

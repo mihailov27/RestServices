@@ -14,6 +14,6 @@ public class ServicesModule extends AbstractModule {
         bind(NewsService.class).to(NewsServiceImpl.class).in(Singleton.class);
         bind(UserService.class).to(UserServiceImpl.class).in(Singleton.class);
         bind(SearchService.class).to(SearchServiceImpl.class).in(Singleton.class);
-        bind(ScheduledIndexService.class).to(ScheduledIndexServiceImpl.class).in(Singleton.class);
+        bind(ScheduledIndexService.class).to(ScheduledIndexServiceImpl.class).asEagerSingleton();
     }
 }

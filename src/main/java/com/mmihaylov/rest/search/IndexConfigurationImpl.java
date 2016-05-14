@@ -5,6 +5,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
+import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequestBuilder;
+import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequestBuilder;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsResponse;
 import org.elasticsearch.client.AdminClient;
@@ -30,9 +32,10 @@ public class IndexConfigurationImpl implements IndexConfiguration {
     public void createIfNotExists(String indexName) {
         LOGGER.debug("Check if index '%s' exists.", indexName);
         boolean isExists = isIndexExists(indexName);
-        if(!isExists) {
-            createIndex(indexName);
+        if(isExists) {
+            deleteIndex(indexName);
         }
+        createIndex(indexName);
     }
 
     private void createIndex(String indexName) {
@@ -41,6 +44,14 @@ public class IndexConfigurationImpl implements IndexConfiguration {
         CreateIndexRequestBuilder createIndexRequestBuilder = admin.indices().prepareCreate(indexName);
         CreateIndexResponse createIndexResponse = createIndexRequestBuilder.get();
         LOGGER.info("Created index 'news':" + createIndexResponse.getContext());
+    }
+
+    private void deleteIndex(String indexName) {
+        LOGGER.debug("Delete index named '%s'", indexName);
+        AdminClient admin = client.admin();
+        DeleteIndexRequestBuilder deleteIndexRequestBuilder = admin.indices().prepareDelete(indexName);
+        DeleteIndexResponse deleteIndexResponse = deleteIndexRequestBuilder.get();
+        LOGGER.info("Delete index response: " + deleteIndexResponse);
     }
 
     private boolean isIndexExists(String indexName) {

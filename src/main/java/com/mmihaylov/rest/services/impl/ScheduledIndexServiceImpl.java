@@ -1,6 +1,7 @@
 package com.mmihaylov.rest.services.impl;
 
 import com.google.inject.Inject;
+import com.google.inject.persist.Transactional;
 import com.mmihaylov.rest.database.dao.NewsDao;
 import com.mmihaylov.rest.database.entities.News;
 import com.mmihaylov.rest.search.indexer.Indexer;
@@ -32,26 +33,38 @@ public class ScheduledIndexServiceImpl implements ScheduledIndexService {
         this.newsDao = newsDao;
         this.newsIndexer = newsIndexer;
         scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
-        scheduledExecutorService.scheduleWithFixedDelay(new IndexNewsRunnable(), 2, 2, TimeUnit.MINUTES);
+        scheduledExecutorService.scheduleAtFixedRate(new IndexNewsRunnable(), 1, 1, TimeUnit.MINUTES);
+    }
+
+    @Transactional
+    public void indexNews() {
+        try {
+            LOGGER.info("Index news records which are not processed yet by indexer.");
+            List<News> news = newsDao.getNotIndexedNews(5);
+            if(news == null) {
+                return;
+            }
+
+            for(News newsRecord : news) {
+                NewsIndexEntity newsIndexEntity = new NewsIndexEntity();
+                newsIndexEntity.setCreatedDate(new Date());
+                newsIndexEntity.setPublicationDate(newsRecord.getPublicationDate());
+                newsIndexEntity.setContent(new String(newsRecord.getNewsText()));
+                newsIndexEntity.setTitle(newsRecord.getTitle());
+                newsIndexer.index(newsIndexEntity);
+                newsRecord.setIsIndexed(true);
+                newsDao.update(newsRecord);
+            }
+        } catch (Exception e) {
+            LOGGER.error("Fail to index entities: ", e);
+        }
+        LOGGER.info("Test update");
     }
 
     protected class IndexNewsRunnable implements Runnable {
 
         public void run() {
-            LOGGER.info("Index news records which are not processed yet by indexer.");
-            List<News> news = newsDao.getNotIndexedNews();
-            if(!CommonUtils.isNullOrEmpty(news)) {
-                for(News newsRecord : news) {
-                    NewsIndexEntity newsIndexEntity = new NewsIndexEntity();
-                    newsIndexEntity.setCreatedDate(new Date());
-                    newsIndexEntity.setPublicationDate(newsRecord.getPublicationDate());
-                    newsIndexEntity.setContent(new String(newsRecord.getNewsText()));
-                    newsIndexEntity.setTitle(newsRecord.getTitle());
-                    newsIndexer.index(newsIndexEntity);
-                    newsRecord.setIsIndexed(true);
-                }
-            }
-            newsDao.save(news);
+            indexNews();
         }
     }
 }

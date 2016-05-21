@@ -15,6 +15,10 @@ public class URLReader {
             URL url = new URL(urlAddress);
             URLConnection urlConnection = url.openConnection();
             InputStream input = urlConnection.getInputStream();
+            if(!urlConnection.getURL().getHost().contains("novini")) {
+                input.close();
+                throw new RestServicesException("incorrect news address.");
+            }
             return input;
         } catch (MalformedURLException me) {
             throw new RestServicesException("Invalid URL address: " + urlAddress, me);

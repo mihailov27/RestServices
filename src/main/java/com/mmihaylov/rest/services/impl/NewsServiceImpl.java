@@ -33,7 +33,7 @@ public class NewsServiceImpl implements NewsService {
 
     private NewsConverter newsConverter;
 
-    private LoadingCache<Long, NewsEntity> cache;
+    //private LoadingCache<Long, NewsEntity> cache;
 
     @Inject
     public NewsServiceImpl(URLReader urlReader, NoviniParser noviniParser, NewsDao newsDao,
@@ -47,16 +47,16 @@ public class NewsServiceImpl implements NewsService {
 
     @Inject
     public void setUp() {
-        cache = CacheBuilder.newBuilder()
-                .initialCapacity(10)
-                .maximumSize(40)
-                .expireAfterWrite(10, TimeUnit.MINUTES)
-                .build(new CacheLoader<Long, NewsEntity>() {
-                    @Override
-                    public NewsEntity load(Long aLong) throws Exception {
-                        return NewsServiceImpl.this.loadNews(aLong);
-                    }
-                });
+//        cache = CacheBuilder.newBuilder()
+//                .initialCapacity(10)
+//                .maximumSize(40)
+//                .expireAfterWrite(10, TimeUnit.MINUTES)
+//                .build(new CacheLoader<Long, NewsEntity>() {
+//                    @Override
+//                    public NewsEntity load(Long aLong) throws Exception {
+//                        return NewsServiceImpl.this.loadNews(aLong);
+//                    }
+//                });
     }
 
     private NewsEntity loadFromHtml(long id) throws RestServicesException {

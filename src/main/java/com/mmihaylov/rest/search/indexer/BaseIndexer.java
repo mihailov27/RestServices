@@ -9,7 +9,6 @@ import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.Client;
 
-import javax.inject.Inject;
 import java.util.List;
 import java.util.Map;
 
@@ -17,8 +16,11 @@ public abstract  class BaseIndexer<T> implements Indexer<T> {
 
     protected static final Logger LOG = LogManager.getLogger(BaseIndexer.class);
 
-    @Inject
     private Client client;
+
+    public BaseIndexer(Client client) {
+        this.client = client;
+    }
 
     public final void index(T entity) {
         String index = getIndex();

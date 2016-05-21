@@ -1,6 +1,8 @@
 package com.mmihaylov.rest.search.indexer;
 
+import com.google.inject.Inject;
 import com.mmihaylov.rest.search.model.NewsIndexEntity;
+import org.elasticsearch.client.Client;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -8,6 +10,11 @@ import java.util.Map;
 import static com.mmihaylov.rest.search.IndexNames.NEWS_INDEX;
 
 public class NewsIndexer extends BaseIndexer<NewsIndexEntity> {
+
+    @Inject
+    public NewsIndexer(Client client) {
+        super(client);
+    }
 
     @Override
     protected Map<String, Object> getSource(NewsIndexEntity entity) {

@@ -1,6 +1,7 @@
 package com.mmihaylov.rest;
 
 import com.mmihaylov.rest.database.DataModule;
+import com.mmihaylov.rest.jobs.JobsModule;
 import com.mmihaylov.rest.resources.ResourcesModule;
 import com.mmihaylov.rest.search.SearchModule;
 import com.mmihaylov.rest.services.ServicesModule;
@@ -16,5 +17,6 @@ public class Configuration extends JerseyServletModule {
         install(new SearchModule());
         install(new ServicesModule());
         install(new ResourcesModule());
+        install(new JobsModule());
     }
 }

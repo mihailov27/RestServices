@@ -1,3 +1,3 @@
-package com.mmihaylov.rest.services;
-
-public interface ScheduledIndexService {}
+//package com.mmihaylov.rest.services;
+//
+//public interface ScheduledIndexService {}

@@ -10,6 +10,7 @@ public class JobsModule extends AbstractModule {
 
     @Override
     protected void configure() {
+        bind(IndexJob.class).in(Singleton.class);
         bind(JobsInitializer.class).asEagerSingleton();
         bind(SchedulerFactory.class).to(StdSchedulerFactory.class).in(Singleton.class);
         bind(JobFactory.class).to(CustomJobFactory.class).in(Singleton.class);

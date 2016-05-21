@@ -38,7 +38,7 @@ public class IndexJob implements Job {
         LOG.info("My job is getting executed.");
         try {
             LOG.info("Index news records which are not processed yet by indexer.");
-            List<News> news = newsDao.getNotIndexedNews(1);
+            List<News> news = newsDao.getNotIndexedNews();
             if(news == null) {
                 return;
             }

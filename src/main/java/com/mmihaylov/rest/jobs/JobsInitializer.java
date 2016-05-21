@@ -34,23 +34,19 @@ public class JobsInitializer {
                     .newJob(IndexJob.class)
                     .withIdentity("indexJob", "indexGroup")
                     .build();
-            //Calendar calendar = java.util.Calendar.getInstance();
-            //calendar.add(Calendar.MINUTE, 2);
-            //Date triggerDate = calendar.getTime();
+            Calendar calendar = java.util.Calendar.getInstance();
+            calendar.add(Calendar.MINUTE, 5);
+            Date triggerDate = calendar.getTime();
             // Trigger the job to run now, and then repeat every 5 minutes
             Trigger trigger = TriggerBuilder.newTrigger()
                     .withIdentity("indexTrigger", "indexGroup")
-                            //.startAt(triggerDate)
-                    .startNow()
-                            //.forJob(indexJobDetail)
-
-                    .withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInMinutes(2).repeatForever())
+                    .startAt(triggerDate)
+                    .withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInMinutes(5).repeatForever())
                     .build();
 
             scheduler.scheduleJob(indexJobDetail, trigger);
         } catch (SchedulerException se) {
             LOG.error("Failed to init index job:", se);
         }
-
     }
 }
